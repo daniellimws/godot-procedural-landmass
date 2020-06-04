@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://Scripts/MapDisplay.cs" type="Script" id=1]
+
+[sub_resource type="PlaneMesh" id=1]
+
+[sub_resource type="SpatialMaterial" id=2]
+flags_unshaded = true
+
+[node name="Spatial" type="Spatial"]
+
+[node name="MapDisplay" type="CSGMesh" parent="."]
+mesh = SubResource( 1 )
+material = SubResource( 2 )
+script = ExtResource( 1 )
+MapWidth = 256
+MapHeight = 256
+MapScale = 2.0
+
+[node name="Camera" type="Camera" parent="."]
+transform = Transform( 1, 0, 0, 0, -1.62921e-07, 1, 0, -1, -1.62921e-07, 0, 2, 0 )
