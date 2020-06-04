@@ -204,6 +204,7 @@ public class MapDisplay : CSGMesh
         mapImage.Unlock();
 
         ImageTexture mapTexture = new ImageTexture();
+        mapTexture.Flags = (uint)ImageTexture.FlagsEnum.Mipmaps;
         mapTexture.CreateFromImage(mapImage);
 
         SpatialMaterial material = Material as SpatialMaterial;
