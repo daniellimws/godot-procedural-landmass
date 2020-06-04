@@ -1,8 +1,23 @@
 using Godot;
 using System;
 
+[Tool]
 public class MapDisplay : CSGMesh
 {
+    [Export]
+    public int MapSeed
+    {
+        get
+        {
+            return _MapSeed;
+        }
+        set
+        {
+            _MapSeed = value;
+            Init();
+        }
+    }
+
     [Export]
     public int MapWidth
     {
@@ -43,8 +58,23 @@ public class MapDisplay : CSGMesh
         }
     }
 
-    private int _MapWidth, _MapHeight;
+    [Export]
+    public Vector2 MapOffset
+    {
+        get
+        {
+            return _MapOffset;
+        }
+        set
+        {
+            _MapOffset = value;
+            Init();
+        }
+    }
+
+    private int _MapSeed, _MapWidth, _MapHeight;
     private float _MapScale;
+    private Vector2 _MapOffset;
     private float[,] noiseMap;
 
     public override void _Ready()
@@ -60,7 +90,7 @@ public class MapDisplay : CSGMesh
 
     private void GenerateNoiseMap()
     {
-        noiseMap = Noise.NoiseMap(MapWidth, MapHeight, MapScale);
+        noiseMap = Noise.NoiseMap(MapSeed, MapWidth, MapHeight, MapScale, MapOffset);
     }
 
     private void GenerateTexture()

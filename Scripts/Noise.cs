@@ -3,7 +3,7 @@ using System;
 
 public static class Noise
 {
-    public static float[,] NoiseMap(int height, int width, float scale)
+    public static float[,] NoiseMap(int seed, int height, int width, float scale, Vector2 offset)
     {
         float[,] noiseMap = new float[width, height];
 
@@ -11,7 +11,7 @@ public static class Noise
         RandomNumberGenerator rng = new RandomNumberGenerator();
         rng.Randomize();
 
-        simplexNoise.Seed = (int)rng.Randi();
+        simplexNoise.Seed = seed;
         simplexNoise.Period = 8;
         simplexNoise.Octaves = 3;
         simplexNoise.Persistence = 0.8f;
@@ -20,7 +20,9 @@ public static class Noise
         {
             for (int x = 0; x < width; ++x)
             {
-                noiseMap[x, y] = simplexNoise.GetNoise2d(x / scale, y / scale);
+                float sampleX = (x + offset.x - width / 2) / scale;
+                float sampleY = (y + offset.y - height / 2) / scale;
+                noiseMap[x, y] = simplexNoise.GetNoise2d(sampleX, sampleY);
             }
         }
 
