@@ -16,6 +16,9 @@ public static class Noise
         simplexNoise.Octaves = 3;
         simplexNoise.Persistence = 0.8f;
 
+        float maxNoise = float.MinValue;
+        float minNoise = float.MaxValue;
+
         for (int y = 0; y < height; ++y)
         {
             for (int x = 0; x < width; ++x)
@@ -23,6 +26,16 @@ public static class Noise
                 float sampleX = (x + offset.x - width / 2) / scale;
                 float sampleY = (y + offset.y - height / 2) / scale;
                 noiseMap[x, y] = simplexNoise.GetNoise2d(sampleX, sampleY);
+                maxNoise = Mathf.Max(maxNoise, noiseMap[x, y]);
+                minNoise = Mathf.Min(minNoise, noiseMap[x, y]);
+            }
+        }
+
+        for (int y = 0; y < height; ++y)
+        {
+            for (int x = 0; x < width; ++x)
+            {
+                noiseMap[x, y] = Mathf.InverseLerp(minNoise, maxNoise, noiseMap[x, y]);
             }
         }
 

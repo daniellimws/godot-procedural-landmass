@@ -4,6 +4,23 @@ using System;
 [Tool]
 public class MapDisplay : CSGMesh
 {
+
+    public enum DrawMode { NOISE_MAP, COLOUR_MAP };
+
+    [Export]
+    public DrawMode drawMode
+    {
+        get
+        {
+            return _drawMode;
+        }
+        set
+        {
+            _drawMode = value;
+            DrawMap();
+        }
+    }
+
     [Export]
     public int MapSeed
     {
@@ -14,7 +31,7 @@ public class MapDisplay : CSGMesh
         set
         {
             _MapSeed = value;
-            Init();
+            DrawMap();
         }
     }
 
@@ -28,7 +45,7 @@ public class MapDisplay : CSGMesh
         set
         {
             _MapWidth = value;
-            Init();
+            DrawMap();
         }
     }
     [Export]
@@ -41,7 +58,7 @@ public class MapDisplay : CSGMesh
         set
         {
             _MapHeight = value;
-            Init();
+            DrawMap();
         }
     }
     [Export]
@@ -54,7 +71,7 @@ public class MapDisplay : CSGMesh
         set
         {
             _MapScale = value;
-            Init();
+            DrawMap();
         }
     }
 
@@ -68,24 +85,75 @@ public class MapDisplay : CSGMesh
         set
         {
             _MapOffset = value;
-            Init();
+            DrawMap();
         }
     }
+
+    [Export]
+    public string[] RegionNames
+    {
+        get
+        {
+            return _RegionNames;
+        }
+        set
+        {
+            _RegionNames = value;
+            DrawMap();
+        }
+    }
+
+    [Export]
+    public float[] RegionThresholds
+    {
+        get
+        {
+            return _RegionThresholds;
+        }
+        set
+        {
+            _RegionThresholds = value;
+            DrawMap();
+        }
+    }
+
+    [Export]
+    public Color[] RegionColors
+    {
+        get
+        {
+            return _RegionColors;
+        }
+        set
+        {
+            _RegionColors = value;
+            DrawMap();
+        }
+    }
+
+    private DrawMode _drawMode;
 
     private int _MapSeed, _MapWidth, _MapHeight;
     private float _MapScale;
     private Vector2 _MapOffset;
     private float[,] noiseMap;
 
+    private string[] _RegionNames;
+    private float[] _RegionThresholds;
+    private Color[] _RegionColors;
+
     public override void _Ready()
     {
-        Init();
+        DrawMap();
     }
 
-    private void Init()
+    private void DrawMap()
     {
         GenerateNoiseMap();
-        GenerateTexture();
+        if (drawMode == DrawMode.COLOUR_MAP)
+            GenerateColorTexture();
+        else
+            GenerateNoiseTexture();
     }
 
     private void GenerateNoiseMap()
@@ -93,7 +161,7 @@ public class MapDisplay : CSGMesh
         noiseMap = Noise.NoiseMap(MapSeed, MapWidth, MapHeight, MapScale, MapOffset);
     }
 
-    private void GenerateTexture()
+    private void GenerateNoiseTexture()
     {
         Image mapImage = new Image();
         mapImage.Create(MapWidth, MapHeight, true, Image.Format.Rgb8);
@@ -102,7 +170,7 @@ public class MapDisplay : CSGMesh
         {
             for (int x = 0; x < MapWidth; ++x)
             {
-                mapImage.SetPixel(x, y, Colors.White.LinearInterpolate(Colors.Black, noiseMap[x, y]));
+                mapImage.SetPixel(x, y, Colors.Black.LinearInterpolate(Colors.White, noiseMap[x, y]));
             }
         }
         mapImage.Unlock();
@@ -112,5 +180,51 @@ public class MapDisplay : CSGMesh
 
         SpatialMaterial material = Material as SpatialMaterial;
         material.AlbedoTexture = mapTexture;
+    }
+
+    private void GenerateColorTexture()
+    {
+        Image mapImage = new Image();
+        mapImage.Create(MapWidth, MapHeight, true, Image.Format.Rgb8);
+        mapImage.Lock();
+        for (int y = 0; y < MapHeight; ++y)
+        {
+            for (int x = 0; x < MapWidth; ++x)
+            {
+                for (int i = 0; i < RegionThresholds.Length; ++i)
+                {
+                    if (noiseMap[x, y] <= RegionThresholds[i])
+                    {
+                        mapImage.SetPixel(x, y, RegionColors[i]);
+                        break;
+                    }
+                }
+            }
+        }
+        mapImage.Unlock();
+
+        ImageTexture mapTexture = new ImageTexture();
+        mapTexture.CreateFromImage(mapImage);
+
+        SpatialMaterial material = Material as SpatialMaterial;
+        material.AlbedoTexture = mapTexture;
+    }
+
+    public override void _UnhandledInput(InputEvent @event)
+    {
+        float moveSpeed = 10;
+        if (@event is InputEventKey eventKey && eventKey.Pressed)
+        {
+            GD.Print("Detect keypress");
+            if (eventKey.Scancode == (int)KeyList.W)
+                _MapOffset.y -= moveSpeed;
+            if (eventKey.Scancode == (int)KeyList.A)
+                _MapOffset.x -= moveSpeed;
+            if (eventKey.Scancode == (int)KeyList.S)
+                _MapOffset.y += moveSpeed;
+            if (eventKey.Scancode == (int)KeyList.D)
+                _MapOffset.x += moveSpeed;
+            DrawMap();
+        }
     }
 }
