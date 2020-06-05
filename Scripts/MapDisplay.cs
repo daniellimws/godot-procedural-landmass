@@ -90,20 +90,6 @@ public class MapDisplay : Spatial
 	}
 
 	[Export]
-	public string[] RegionNames
-	{
-		get
-		{
-			return _RegionNames;
-		}
-		set
-		{
-			_RegionNames = value;
-			DrawMap();
-		}
-	}
-
-	[Export]
 	public float[] RegionThresholds
 	{
 		get
@@ -180,7 +166,6 @@ public class MapDisplay : Spatial
 	private Vector2 _MapOffset;
 	private float[,] noiseMap;
 
-	private string[] _RegionNames;
 	private float[] _RegionThresholds;
 	private Color[] _RegionColors;
 
