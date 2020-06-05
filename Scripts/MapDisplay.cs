@@ -145,6 +145,18 @@ public class MapDisplay : Spatial
 		}
 	}
 
+	[Export]
+	public Curve MeshHeightCurve
+	{
+		get {
+			return _MeshHeightCurve;
+		}
+		set {
+			_MeshHeightCurve = value;
+			DrawMap();
+		}
+	}
+
 	private DrawMode _drawMode;
 
 	private int _MapSeed, _MapWidth, _MapHeight;
@@ -157,6 +169,7 @@ public class MapDisplay : Spatial
 	private Color[] _RegionColors;
 
 	private float _MeshHeightMultiplier;
+	private Curve _MeshHeightCurve;
 
 	private bool ready = false;
 
@@ -185,7 +198,7 @@ public class MapDisplay : Spatial
 
 	private void GenerateMesh()
 	{
-		ArrayMesh mesh = MeshGenerator.GenerateMesh(noiseMap, MeshHeightMultiplier);
+		ArrayMesh mesh = MeshGenerator.GenerateMesh(noiseMap, MeshHeightMultiplier, MeshHeightCurve);
 		MeshInstance meshInstance = GetNode<MeshInstance>("MeshInstance");
 		meshInstance.Mesh = mesh;
 
