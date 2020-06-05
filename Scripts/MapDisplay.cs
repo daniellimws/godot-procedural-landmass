@@ -2,7 +2,7 @@ using Godot;
 using System;
 
 [Tool]
-public class MapDisplay : CSGMesh
+public class MapDisplay : Spatial
 {
 
     public enum DrawMode { NOISE_MAP, COLOUR_MAP };
@@ -167,13 +167,13 @@ public class MapDisplay : CSGMesh
 
     private void GenerateNoiseTexture()
     {
-        SpatialMaterial material = Material as SpatialMaterial;
+        SpatialMaterial material = GetNode<CSGMesh>("Plane").Material as SpatialMaterial;
         material.AlbedoTexture = TextureGenerator.GenerateNoiseTexture(noiseMap);
     }
 
     private void GenerateColorTexture()
     {
-        SpatialMaterial material = Material as SpatialMaterial;
+        SpatialMaterial material = GetNode<CSGMesh>("Plane").Material as SpatialMaterial;
         material.AlbedoTexture = TextureGenerator.GenerateColorTexture(noiseMap, RegionThresholds, RegionColors);
     }
 
