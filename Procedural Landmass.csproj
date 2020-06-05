@@ -56,6 +56,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scripts\MapDisplay.cs" />
     <Compile Include="Scripts\Noise.cs" />
+    <Compile Include="Scripts\TextureGenerator.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
