@@ -27,8 +27,8 @@ public static class MeshGenerator
                 if (x < width - 1 && y < height - 1)
                 {
                     indices[indices_idx * 6 + 0] = index;
-                    indices[indices_idx * 6 + 1] = index + width;
-                    indices[indices_idx * 6 + 2] = index + width + 1;
+                    indices[indices_idx * 6 + 1] = index + width + 1;
+                    indices[indices_idx * 6 + 2] = index + width;
                     indices[indices_idx * 6 + 3] = index;
                     indices[indices_idx * 6 + 4] = index + 1;
                     indices[indices_idx * 6 + 5] = index + width + 1;

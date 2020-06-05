@@ -204,7 +204,7 @@ public class MapDisplay : Spatial
 
 		SpatialMaterial material = new SpatialMaterial();
 		material.AlbedoTexture = TextureGenerator.GenerateColorTexture(noiseMap, RegionThresholds, RegionColors);
-		material.ParamsCullMode = SpatialMaterial.CullMode.Disabled;
+		// material.ParamsCullMode = SpatialMaterial.CullMode.Disabled;
 		// material.FlagsUnshaded = true;
 		mesh.SurfaceSetMaterial(0, material);
 	}
