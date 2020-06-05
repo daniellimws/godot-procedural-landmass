@@ -78,8 +78,8 @@ public static class MeshGenerator
 
     private static Vector3 CalculateNormal(Vector3 a, Vector3 b, Vector3 c)
     {
-        Vector3 v1 = a - b;
-        Vector3 v2 = c - b;
+        Vector3 v1 = b - a;
+        Vector3 v2 = b - c;
         return v1.Cross(v2).Normalized();
     }
 }
