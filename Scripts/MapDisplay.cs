@@ -131,6 +131,20 @@ public class MapDisplay : Spatial
 		}
 	}
 
+	[Export]
+	public float MeshHeightMultiplier
+	{
+		get
+		{
+			return _MeshHeightMultiplier;
+		}
+		set
+		{
+			_MeshHeightMultiplier = value;
+			DrawMap();
+		}
+	}
+
 	private DrawMode _drawMode;
 
 	private int _MapSeed, _MapWidth, _MapHeight;
@@ -141,6 +155,8 @@ public class MapDisplay : Spatial
 	private string[] _RegionNames;
 	private float[] _RegionThresholds;
 	private Color[] _RegionColors;
+
+	private float _MeshHeightMultiplier;
 
 	private bool ready = false;
 
@@ -169,14 +185,14 @@ public class MapDisplay : Spatial
 
 	private void GenerateMesh()
 	{
-		ArrayMesh mesh = MeshGenerator.GenerateMesh(noiseMap);
+		ArrayMesh mesh = MeshGenerator.GenerateMesh(noiseMap, MeshHeightMultiplier);
 		MeshInstance meshInstance = GetNode<MeshInstance>("MeshInstance");
 		meshInstance.Mesh = mesh;
 
 		SpatialMaterial material = new SpatialMaterial();
 		material.AlbedoTexture = TextureGenerator.GenerateColorTexture(noiseMap, RegionThresholds, RegionColors);
 		material.ParamsCullMode = SpatialMaterial.CullMode.Disabled;
-		material.FlagsUnshaded = true;
+		// material.FlagsUnshaded = true;
 		mesh.SurfaceSetMaterial(0, material);
 	}
 

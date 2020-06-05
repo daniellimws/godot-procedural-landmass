@@ -3,7 +3,7 @@ using System;
 
 public static class MeshGenerator
 {
-    public static ArrayMesh GenerateMesh(float[,] noiseMap)
+    public static ArrayMesh GenerateMesh(float[,] noiseMap, float heightMultiplier)
     {
         int width = noiseMap.GetLength(0);
         int height = noiseMap.GetLength(1);
@@ -21,7 +21,7 @@ public static class MeshGenerator
             for (int x = 0; x < width; ++x)
             {
                 int index = x + y * width;
-                vertices[index] = new Vector3(topLeftX + x, noiseMap[x, y] * 10f, topLeftZ + y);
+                vertices[index] = new Vector3(topLeftX + x, noiseMap[x, y] * heightMultiplier, topLeftZ + y);
                 uvs[index] = new Vector2(x / (float)width, y / (float)height);
 
                 if (x < width - 1 && y < height - 1)
