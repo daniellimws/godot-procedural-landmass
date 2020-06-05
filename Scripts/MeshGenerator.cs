@@ -3,7 +3,7 @@ using System;
 
 public static class MeshGenerator
 {
-    public static ArrayMesh GenerateMesh(float[,] noiseMap, float heightMultiplier, Curve heightCurve)
+    public static ArrayMesh GenerateMesh(float[,] noiseMap, float heightMultiplier, Curve heightCurve, int lod)
     {
         int width = noiseMap.GetLength(0);
         int height = noiseMap.GetLength(1);
@@ -16,51 +16,33 @@ public static class MeshGenerator
         float topLeftX = (width - 1) / -2f;
         float topLeftZ = (height - 1) / -2f;
 
-        for (int y = 0; y < height; ++y)
+        int simplificationFactor = lod == 0 ? 1 : lod * 2;
+        int verticesPerLine = (width - 1) / simplificationFactor + 1;
+
+        int vertices_idx = 0;
+        for (int y = 0; y < height; y += simplificationFactor)
         {
-            for (int x = 0; x < width; ++x)
+            for (int x = 0; x < width; x += simplificationFactor)
             {
-                int index = x + y * width;
-                vertices[index] = new Vector3(topLeftX + x, heightCurve.Interpolate(noiseMap[x, y]) * heightMultiplier, topLeftZ + y);
-                uvs[index] = new Vector2(x / (float)width, y / (float)height);
+                vertices[vertices_idx] = new Vector3(topLeftX + x, heightCurve.Interpolate(noiseMap[x, y]) * heightMultiplier, topLeftZ + y);
+                uvs[vertices_idx] = new Vector2(x / (float)width, y / (float)height);
+                ++vertices_idx;
             }
         }
 
         int indices_idx = 0;
-        for (int y = 0; y < height; ++y)
+        vertices_idx = 0;
+        for (int y = 0; y < height; y += simplificationFactor)
         {
-            for (int x = 0; x < width; ++x)
+            for (int x = 0; x < width; x += simplificationFactor)
             {
-                int index = x + y * width;
-                Vector3 normal;
                 if (x < width - 1 && y < height - 1)
                 {
-                    indices[indices_idx * 6 + 0] = index;
-                    indices[indices_idx * 6 + 1] = index + width + 1;
-                    indices[indices_idx * 6 + 2] = index + width;
-
-                    normal = CalculateNormal(vertices[index], vertices[index + width + 1], vertices[index + width]);
-                    normals[index] += normal;
-                    normals[index] = normals[index].Normalized();
-                    normals[index + width + 1] += normal;
-                    normals[index + width + 1] = normals[index + width + 1].Normalized();
-                    normals[index + width] += normal;
-                    normals[index + width] = normals[index + width].Normalized();
-
-                    indices[indices_idx * 6 + 3] = index;
-                    indices[indices_idx * 6 + 4] = index + 1;
-                    indices[indices_idx * 6 + 5] = index + width + 1;
-
-                    normal = CalculateNormal(vertices[index], vertices[index + 1], vertices[index + width + 1]);
-                    normals[index] += normal;
-                    normals[index] = normals[index].Normalized();
-                    normals[index + 1] += normal;
-                    normals[index + 1] = normals[index + 1].Normalized();
-                    normals[index + width + 1] += normal;
-                    normals[index + width + 1] = normals[index + width + 1].Normalized();
-
-                    ++indices_idx;
+                    AddTriangle(vertices, indices, normals, vertices_idx, vertices_idx + verticesPerLine + 1, vertices_idx + verticesPerLine, indices_idx);
+                    AddTriangle(vertices, indices, normals, vertices_idx, vertices_idx + 1, vertices_idx + verticesPerLine + 1, indices_idx + 3);
+                    indices_idx += 6;
                 }
+                ++vertices_idx;
             }
         }
 
@@ -81,5 +63,20 @@ public static class MeshGenerator
         Vector3 v1 = b - a;
         Vector3 v2 = b - c;
         return v1.Cross(v2).Normalized();
+    }
+
+    private static void AddTriangle(Vector3[] vertices, int[] indices, Vector3[] normals, int a, int b, int c, int index)
+    {
+        indices[index] = a;
+        indices[index + 1] = b;
+        indices[index + 2] = c;
+
+        Vector3 normal = CalculateNormal(vertices[a], vertices[b], vertices[c]);
+        normals[a] += normal;
+        normals[a] = normals[a].Normalized();
+        normals[b] += normal;
+        normals[b] = normals[b].Normalized();
+        normals[c] += normal;
+        normals[c] = normals[c].Normalized();
     }
 }

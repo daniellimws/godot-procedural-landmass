@@ -148,11 +148,27 @@ public class MapDisplay : Spatial
 	[Export]
 	public Curve MeshHeightCurve
 	{
-		get {
+		get
+		{
 			return _MeshHeightCurve;
 		}
-		set {
+		set
+		{
 			_MeshHeightCurve = value;
+			DrawMap();
+		}
+	}
+
+	[Export(PropertyHint.Range, "0, 6, 1")]
+	public int LevelOfDetail
+	{
+		get
+		{
+			return _LevelOfDetail;
+		}
+		set
+		{
+			_LevelOfDetail = value;
 			DrawMap();
 		}
 	}
@@ -170,6 +186,8 @@ public class MapDisplay : Spatial
 
 	private float _MeshHeightMultiplier;
 	private Curve _MeshHeightCurve;
+
+	private int _LevelOfDetail;
 
 	private bool ready = false;
 
@@ -198,14 +216,12 @@ public class MapDisplay : Spatial
 
 	private void GenerateMesh()
 	{
-		ArrayMesh mesh = MeshGenerator.GenerateMesh(noiseMap, MeshHeightMultiplier, MeshHeightCurve);
+		ArrayMesh mesh = MeshGenerator.GenerateMesh(noiseMap, MeshHeightMultiplier, MeshHeightCurve, LevelOfDetail);
 		MeshInstance meshInstance = GetNode<MeshInstance>("MeshInstance");
 		meshInstance.Mesh = mesh;
 
 		SpatialMaterial material = new SpatialMaterial();
 		material.AlbedoTexture = TextureGenerator.GenerateColorTexture(noiseMap, RegionThresholds, RegionColors);
-		// material.ParamsCullMode = SpatialMaterial.CullMode.Disabled;
-		// material.FlagsUnshaded = true;
 		mesh.SurfaceSetMaterial(0, material);
 	}
 
