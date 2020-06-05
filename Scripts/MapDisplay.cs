@@ -204,6 +204,7 @@ public class MapDisplay : Spatial
 		ArrayMesh mesh = MeshGenerator.GenerateMesh(noiseMap, MeshHeightMultiplier, MeshHeightCurve, LevelOfDetail);
 		MeshInstance meshInstance = GetNode<MeshInstance>("MeshInstance");
 		meshInstance.Mesh = mesh;
+        meshInstance.CreateTrimeshCollision();
 
 		SpatialMaterial material = new SpatialMaterial();
 		material.AlbedoTexture = TextureGenerator.GenerateColorTexture(noiseMap, RegionThresholds, RegionColors);
@@ -220,23 +221,5 @@ public class MapDisplay : Spatial
 	{
 		SpatialMaterial material = GetNode<CSGMesh>("Plane").Material as SpatialMaterial;
 		material.AlbedoTexture = TextureGenerator.GenerateColorTexture(noiseMap, RegionThresholds, RegionColors);
-	}
-
-	public override void _UnhandledInput(InputEvent @event)
-	{
-		float moveSpeed = 10;
-		if (@event is InputEventKey eventKey && eventKey.Pressed)
-		{
-			GD.Print("Detect keypress");
-			if (eventKey.Scancode == (int)KeyList.W)
-				_MapOffset.y -= moveSpeed;
-			if (eventKey.Scancode == (int)KeyList.A)
-				_MapOffset.x -= moveSpeed;
-			if (eventKey.Scancode == (int)KeyList.S)
-				_MapOffset.y += moveSpeed;
-			if (eventKey.Scancode == (int)KeyList.D)
-				_MapOffset.x += moveSpeed;
-			DrawMap();
-		}
 	}
 }

@@ -57,6 +57,7 @@
     <Compile Include="Scripts\MapDisplay.cs" />
     <Compile Include="Scripts\MeshGenerator.cs" />
     <Compile Include="Scripts\Noise.cs" />
+    <Compile Include="Scripts\Player.cs" />
     <Compile Include="Scripts\TextureGenerator.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
