@@ -5,7 +5,7 @@ using System;
 public class MapDisplay : Spatial
 {
 
-    public enum DrawMode { NOISE_MAP, COLOUR_MAP };
+    public enum DrawMode { NOISE_MAP, COLOUR_MAP, MESH };
 
     [Export]
     public DrawMode drawMode
@@ -156,6 +156,11 @@ public class MapDisplay : Spatial
         GenerateNoiseMap();
         if (drawMode == DrawMode.COLOUR_MAP)
             GenerateColorTexture();
+        else if (drawMode == DrawMode.MESH)
+        {
+            GenerateColorTexture();
+            GenerateMesh();
+        }
         else
             GenerateNoiseTexture();
     }
@@ -163,6 +168,18 @@ public class MapDisplay : Spatial
     private void GenerateNoiseMap()
     {
         noiseMap = Noise.NoiseMap(MapSeed, MapWidth, MapHeight, MapScale, MapOffset);
+    }
+
+    private void GenerateMesh()
+    {
+        ArrayMesh mesh = MeshGenerator.GenerateMesh(noiseMap);
+        MeshInstance meshInstance = GetNode<MeshInstance>("MeshInstance");
+        meshInstance.Mesh = mesh;
+
+        SpatialMaterial material = new SpatialMaterial();
+        material.AlbedoTexture = TextureGenerator.GenerateColorTexture(noiseMap, RegionThresholds, RegionColors);
+        material.ParamsCullMode = SpatialMaterial.CullMode.Disabled;
+        mesh.SurfaceSetMaterial(0, material);
     }
 
     private void GenerateNoiseTexture()
